@@ -1,10 +1,9 @@
 """Responsible for everything related to sqlite itself."""
 
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event, DDL
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
-
 
 Base = declarative_base()  # Connects the object to the database engine
 
@@ -16,6 +15,7 @@ class Db:
 
     engine = None
     session: Session
+    Base = declarative_base()
 
     @staticmethod
     def get_instance():
@@ -34,10 +34,24 @@ class Db:
     @staticmethod
     def connect():
         """Connect to db."""
-        if Db.engine is None:
-            Db.engine = create_engine("sqlite:///task.db", echo=True)
-            db_session = sessionmaker(bind=Db.engine)
-            Db.session = db_session()
+        try:
+            if Db.engine is None:
+                Db.engine = create_engine("sqlite:///task.db", echo=True)
+                db_session = sessionmaker(bind=Db.engine)
+                Db.session = db_session()
+                event.listen(
+                    Base.metadata,
+                    "before_create",
+                    DDL("CREATE SCHEMA IF NOT EXISTS TaskSchema"),
+                )
+        except Exception as err:
+            print("error in connect: ", err)
+
+    @staticmethod
+    def create_tables():
+        """Create Tables."""
+        Db.Base.metadata.create_all(Db.engine)
+        Db.session.commit()
 
     @staticmethod
     def get_session():

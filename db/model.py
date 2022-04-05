@@ -2,10 +2,10 @@
 from datetime import datetime, timezone
 
 import sqlalchemy as db
-from .service import Base, Db
+from .service import Db
 
 
-class BaseModel(Base):
+class BaseModel(Db.Base):
     """Template for our models."""
 
     __abstract__ = True

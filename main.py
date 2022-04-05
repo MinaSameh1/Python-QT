@@ -2,22 +2,24 @@
 
 from sqlalchemy.sql.schema import MetaData
 from db import DbService
-import user
+from user import UserModel, create_user
+from product import ProductModel, create_product
 
 
 def init():
-    db = DbService.get_instance()
+    """Start required services."""
     DbService.connect()
-    MetaData().create_all(DbService.engine)
 
 
 def main():
     """Func."""
     init()
-    usr = user.create_user("test", "test last", "1234", "test@mail.com")
-    usr.save()
-
-    print(usr)
+    # prd = product.create_product("test", 30.5)
+    # usr = user.create_user("test", "test last", "1234", "test@mail.com")
+    DbService.create_tables()
+    # usr.save()
+    #
+    # prd.save()
 
 
 if __name__ == "__main__":

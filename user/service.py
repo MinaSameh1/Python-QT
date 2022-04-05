@@ -1,6 +1,6 @@
 """Responsible for anything User related operations."""
-from .model import UserModel
 import logging
+from .model import UserModel
 
 
 def create_user(first: str, last: str, password: str, email: str) -> UserModel:
@@ -25,7 +25,7 @@ def create_user(first: str, last: str, password: str, email: str) -> UserModel:
         return None
 
 
-def login(email, password) -> UserModel | bool:
+def login(email, password) -> UserModel or bool:
     """Login current user."""
     user = UserModel.find(email)
     if user is not None:
