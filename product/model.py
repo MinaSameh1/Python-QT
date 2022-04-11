@@ -26,30 +26,39 @@ class ProductModel(BaseModel):
     product_price: Column = Column(Float, nullable=False)
 
     @staticmethod
-    def find(name: str):
+    def find(product_name: str = "", product_id=None):
         """
         Find Product with name
 
-        @param name `str`: Searchs using the email
+        @param name `str`: Searchs using product name
+        @param id: Searching using ID
         """
-        return (
-            DbService.session.query(ProductModel)
-            .filter(ProductModel.product_name.like(name))
-            .all()
-        )
+        if product_id is not None:
+            return (
+                DbService.session.query(ProductModel)
+                .filter(ProductModel.id.like(product_id))
+                .all()
+            )
+        if product_name != "":
+            return (
+                DbService.session.query(ProductModel)
+                .filter(ProductModel.product_name.like(product_name))
+                .all()
+            )
+        return DbService.session.query(ProductModel).all()
 
 
-ProductsCart = Table(
-    "Cart",
-    DbService.Base.metadata,
-    Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("user_id", Integer, ForeignKey("User.id"), nullable=False),
-)
-
-ProductsCart = Table(
-    "CartItem",
-    DbService.Base.metadata,
-    Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("cart_id", Integer, ForeignKey("Cart.id"), nullable=False),
-    Column("ProductItem", Integer, ForeignKey("Products.id"), nullable=False),
-)
+# ProductCart = Table(
+#     "Cart",
+#     DbService.Base.metadata,
+#     Column("id", Integer, primary_key=True, autoincrement=True),
+#     Column("user_id", Integer, ForeignKey("User.id"), nullable=False),
+# )
+#
+# ProductCartItem = Table(
+#     "CartItem",
+#     DbService.Base.metadata,
+#     Column("id", Integer, primary_key=True, autoincrement=True),
+#     Column("cart_id", Integer, ForeignKey("Cart.id"), nullable=False),
+#     Column("ProductItem", Integer, ForeignKey("Products.id"), nullable=False),
+# )

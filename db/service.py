@@ -5,8 +5,6 @@ from sqlalchemy import create_engine, event, DDL
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()  # Connects the object to the database engine
-
 
 class Db:
     """Singleton DB class, responsible for all basic sqlite operations."""
@@ -39,11 +37,7 @@ class Db:
                 Db.engine = create_engine("sqlite:///task.db", echo=True)
                 db_session = sessionmaker(bind=Db.engine)
                 Db.session = db_session()
-                event.listen(
-                    Base.metadata,
-                    "before_create",
-                    DDL("CREATE SCHEMA IF NOT EXISTS TaskSchema"),
-                )
+                Db.create_tables()
         except Exception as err:
             print("error in connect: ", err)
 

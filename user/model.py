@@ -19,8 +19,7 @@ class UserModel(BaseModel):
     Attribuites
     ---
     user_id: int
-    first_name: string
-    last_name: string
+    name: string
     password: string
     email: string
 
@@ -32,12 +31,11 @@ class UserModel(BaseModel):
     """
 
     __tablename__ = "User"
-    first_name: Column = Column(String)
-    last_name: Column = Column(String)
-    password: Column = Column(String)
-    email: Column = Column(String, unique=True)
+    name: Column[str] = Column(String)
+    password: Column[str] = Column(String)
+    email: Column[str] = Column(String, unique=True)
 
-    def before_save(self) -> None:
+    def before_save(self):
         """Before saving the user encrypt the password."""
         self.password = sha256_crypt.hash(str(self.password))
 
@@ -48,17 +46,27 @@ class UserModel(BaseModel):
         @param password `str`: the password that will be compared.
         @return boolean: true if they are the same.
         """
-        return sha256_crypt.verify(password, self.password)
+        if self.password is not None and password is not None:
+            return sha256_crypt.verify(str(password), self.password)
+        return False
 
     @staticmethod
-    def find(email):
+    def find(email: str = "", id=None):
         """
         Find user with email.
 
         @param email `str`: Searchs using the email
         """
-        return (
-            DbService.session.query(UserModel)
-            .filter(UserModel.email.like(email))
-            .all()
-        )
+        if email != "":
+            return (
+                DbService.session.query(UserModel)
+                .filter(UserModel.email.like(email))
+                .all()
+            )
+        if id is not None:
+            return (
+                DbService.session.query(UserModel)
+                .filter(UserModel.id.like(id))
+                .all()
+            )
+        return DbService.session.query(UserModel).all()
