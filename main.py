@@ -74,9 +74,9 @@ class Login(QDialog):
         widget.setCurrentIndex(widget.currentIndex() + 1)
 
     def go_to_main_page(self, user):
+        """Go to landing page."""
         widget.setFixedWidth(1000)
         widget.setFixedHeight(800)
-        """Go to landing page."""
         mpage = MainPage(user)
         widget.addWidget(mpage)
         widget.setCurrentIndex(widget.currentIndex() + 1)
@@ -126,15 +126,22 @@ class MainPage(QDialog):
             return
         if create_product(product_name, float(product_price)):
             self.tbl.insertRow(row_count)
-            QMessageBox.information(self, "Info", "Added Item to db!")
             self.tbl.setItem(
                 row_count, 1, QtWidgets.QTableWidgetItem(str(product_name))
             )
             self.tbl.setItem(
                 row_count, 2, QtWidgets.QTableWidgetItem(str(product_price))
             )
+            product = get_products(product_name)[0]
+            self.tbl.setItem(
+                row_count, 0, QtWidgets.QTableWidgetItem(str(product.id))
+            )
+            QMessageBox.information(self, "Info", "Added Item to db!")
+        else:
+            QMessageBox.information(self, "Info", "Cannot add")
 
     def _sell_item(self):
+        """Add item to listwidget for view."""
         for index in self.tbl.selectedIndexes():
             row = index.row()
             product_name = self.tbl.item(row, 1).text()
@@ -151,26 +158,39 @@ class MainPage(QDialog):
 
     def _remove_row(self):
         """Remove Row from db and table."""
-        for index in self.tbl.selectedIndexes():
-            row = index.row()
-            product_id = self.tbl.item(row, 0).text()
-            product_name = self.tbl.item(row, 1).text()
-            if delete_product(product_name, product_id=product_id):
-                self.tbl.removeRow(row)
-                QMessageBox.information(self, "Info", "Deleted row from db")
+        if len(self.tbl.selectedIndexes()):
+            for index in self.tbl.selectedIndexes():
+                row = index.row()
+                product_id = self.tbl.item(row, 0).text()
+                product_name = self.tbl.item(row, 1).text()
+                if delete_product(product_name, product_id=product_id):
+                    self.tbl.removeRow(row)
+                    QMessageBox.information(
+                        self, "Info", "Deleted row from db")
+                else:
+                    QMessageBox.information(self, "Info", "Cannot Delete.")
+        else:
+            QMessageBox.information(
+                self, "Info", "Please select cell to delete"
+            )
 
     def _edit_item(self):
         """Edit item in DB."""
-        logging.debug("SelectedIndexes: %s", self.tbl.selectedIndexes())
-        for index in self.tbl.selectedIndexes():
-            row = index.row()
-            product_id = self.tbl.item(row, 0).text()
-            product_name = self.tbl.item(row, 1).text()
-            product_price = self.tbl.item(row, 2).text()
-            if update_product(
-                product_name, product_price, product_id=product_id
-            ):
-                QMessageBox.information(self, "Info", "Updated Item")
+        if len(self.tbl.selectedIndexes()):
+            logging.debug("SelectedIndexes: %s", self.tbl.selectedIndexes())
+            for index in self.tbl.selectedIndexes():
+                row = index.row()
+                product_id = self.tbl.item(row, 0).text()
+                product_name = self.tbl.item(row, 1).text()
+                product_price = self.tbl.item(row, 2).text()
+                if update_product(
+                    product_name, product_price, product_id=product_id
+                ):
+                    QMessageBox.information(self, "Info", "Updated Item")
+                else:
+                    QMessageBox.information(self, "Info", "Cannot Edit.")
+        else:
+            QMessageBox.information(self, "Info", "Please select cell to edit")
 
     def _receipt(self):
         items = [self.lst.item(i).text() for i in range(self.lst.count())]
@@ -217,7 +237,8 @@ class MainPage(QDialog):
                 table_row, 1, QtWidgets.QTableWidgetItem(row.product_name)
             )
             self.tbl.setItem(
-                table_row, 2, QtWidgets.QTableWidgetItem(str(row.product_price))
+                table_row, 2, QtWidgets.QTableWidgetItem(
+                    str(row.product_price))
             )
             self.tbl.item(table_row, 0).setFlags(
                 self.tbl.item(table_row, 0).flags() & ~QtCore.Qt.ItemIsEditable
@@ -226,6 +247,7 @@ class MainPage(QDialog):
 
     def go_to_login(self):
         """Return to login screen."""
+        self.user = None
         widget.setFixedWidth(480)
         widget.setFixedHeight(620)
         widget.setCurrentIndex(widget.currentIndex() - 1)

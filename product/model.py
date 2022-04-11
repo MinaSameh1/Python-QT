@@ -46,19 +46,3 @@ class ProductModel(BaseModel):
                 .all()
             )
         return DbService.session.query(ProductModel).all()
-
-
-# ProductCart = Table(
-#     "Cart",
-#     DbService.Base.metadata,
-#     Column("id", Integer, primary_key=True, autoincrement=True),
-#     Column("user_id", Integer, ForeignKey("User.id"), nullable=False),
-# )
-#
-# ProductCartItem = Table(
-#     "CartItem",
-#     DbService.Base.metadata,
-#     Column("id", Integer, primary_key=True, autoincrement=True),
-#     Column("cart_id", Integer, ForeignKey("Cart.id"), nullable=False),
-#     Column("ProductItem", Integer, ForeignKey("Products.id"), nullable=False),
-# )
