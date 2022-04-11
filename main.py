@@ -222,8 +222,6 @@ class MainPage(QDialog):
 
     def load_data(self):
         """Load data from sql file."""
-        # connection = sqlite3.connect(f"{LOCAL_DIR}task.db")
-        # cur = connection.cursor()
         products = get_products()
         self.tbl.setRowCount(len(products))
         table_row = 0
