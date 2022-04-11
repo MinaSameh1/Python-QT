@@ -1,6 +1,6 @@
-This is a quick program to test sqlalchemy out.
+This is a quick program to test sqlalchemy and GUI out.
 
-I wanted to try out pyqt5 and tkinter, so I made this quick program, it isn't meant to be taken seriously.
+I wanted to try out pyqt5 and tkinter, so I made this quick program, it isn't meant to be taken seriously, I tried also making everything be "clean" but I gave up half way as this is just a test for something.
 
 ## Resources
 - [Base Model for sqlalchemy](https://dev.to/chidioguejiofor/making-sqlalchemy-models-simpler-by-creating-a-basemodel-3m9c) 
